@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - 'release-*'
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -42,13 +39,13 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    # - name: Extract version from tag
-    #   id: extract_version
-    #   run: |
-    #     # Extract version from tag (e.g., release-1.2.3 -> 1.2.3)
-    #     VERSION=${GITHUB_REF#refs/tags/release-}
-    #     echo "version=$VERSION" >> $GITHUB_OUTPUT
+    - name: Extract version from tag
+      id: extract_version
+      run: |
+        # Extract version from tag (e.g., release-1.2.3 -> 1.2.3)
+        VERSION=${GITHUB_REF#refs/tags/release-}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Build and Push
       run: |
-        agentstack build ./ --tag ghcr.io/${{ github.repository }}/github-issue-creator --no-import --multi-platform --push
+        agentstack build ./ --tag ghcr.io/${{ github.repository }}/github-issue-creator:${{ steps.extract_version.outputs.version }} --no-import --multi-platform --push
