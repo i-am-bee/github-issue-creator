@@ -4,8 +4,9 @@ on:
   push:
     tags:
       - 'release-*'
+  pull_request:
     branches:
-      - agentstack-improvements
+      - main
 
 jobs:
   build:
