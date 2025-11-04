@@ -83,7 +83,7 @@ You can also easily start the agent in [Agent Stack](https://agentstack.beeai.de
 
 ```bash
 # Install the GH issue creator
-agentstack add ghcr.io/i-am-bee/github-issue-creator/github-issue-creator
+agentstack add ghcr.io/i-am-bee/github-issue-creator/github-issue-creator:0.2.0
 
 # Setup the repo
 agentstack env add "GitHub Issue Creator" GITHUB_REPOSITORY=username/reponame
