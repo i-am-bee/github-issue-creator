@@ -1,5 +1,3 @@
-# GitHub Issue Creator
-
 <div align="center">
 
 [![Gitingest](https://img.shields.io/badge/Gitingest-blue?logo=github)](https://gitingest.com/i-am-bee/github-issue-creator)
@@ -7,6 +5,8 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 </div>
+
+# GitHub Issue Creator
 
 A multi-agent system for creating well-structured GitHub issues using the [BeeAI Framework](https://github.com/i-am-bee/beeai-framework). This system coordinates between specialized agents to draft issues, check for duplicates, and create final GitHub issues with customizable templates. The system is consumable via the [Agent Stack](https://github.com/i-am-bee/agentstack) (UI and CLI) through the A2A protocol.
 
