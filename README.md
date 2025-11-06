@@ -13,16 +13,36 @@
 
 A multi-agent system for creating well-structured GitHub issues using the [BeeAI Framework](https://github.com/i-am-bee/beeai-framework). This system coordinates between specialized agents to draft issues, check for duplicates, and create final GitHub issues with customizable templates. The system is consumable via the [Agent Stack](https://github.com/i-am-bee/agentstack) (UI and CLI) through the A2A protocol.
 
-✅ Multi-agent workflow  
-🔄 Real-time trajectory tracking  
+✅ Multi-agent workflow
+🔄 Real-time trajectory tracking
 📝 Customizable issue templates
+
+## Motivation
+
+As AI coding assistants become more capable, **the bottleneck in software development is shifting from implementation to specification**. When AI can handle the *how*, the quality of your *what* and *why* becomes critical.
+
+This project ensures every GitHub issue is well-scoped, consistently formatted, and grounded in your project's context—making it ready for both human developers and AI assistants to act on efficiently.
+
+## Features
+
+- 📝 **Template Support**: Bug report and feature request templates
+- 📖 **Documentation Grounding**: Technical Writer uses project documentation for technical accuracy
+- 🔄 **Self-Reflection**: Writer validates drafts against format rules and requirements automatically
+- 🔗 **GitHub Integration**: Seamless interaction through GitHub MCP server
+- 🏷️ **Issue Types Support**: Automatic detection and use of organization issue types with fallback to default types (Feature/Bug)
+- 🏷️ **Labels Support**: Automatic retrieval and application of repository labels to created issues
+- 📊 **Trajectory Tracking**: Real-time visibility into agent interactions and tool usage
+- 🔍 **Duplicate Prevention**: Intelligent search for existing similar issues
+- ✅ **User Approval**: Human-in-the-loop workflow with approval gates
+- ⚙️ **Conditional Requirements**: Enforced workflow steps and dependencies
+- 🔒 **Repository-Scoped Tools**: Pre-configured GitHub tools with repository context for better security
 
 ## What is GitHub Issue Creator?
 
 The GitHub Issue Creator orchestrates a multi-step workflow using specialized agents:
 
 - **Project Manager**: Coordinates the entire workflow and manages agent handoffs
-- **Technical Writer**: Creates structured issue drafts from user input using templates, grounded with project documentation for technical accuracy
+- **Technical Writer**: Creates structured issue drafts from user input using templates, grounded with project documentation for technical accuracy. Includes self-reflection loop to ensure strict format and rule compliance.
 - **Analyst**: Searches for existing similar issues to prevent duplicates
 
 This gives you consistent, professional GitHub issues while preventing duplicates and maintaining quality standards. The system integrates with GitHub through the [GitHub MCP server](https://github.com/modelcontextprotocol/servers/tree/main/src/github) for seamless repository interactions.
@@ -38,21 +58,8 @@ Perfect for:
 ## Agents Included
 
 🎯 **[Project Manager](src/github_issue_creator/agents/manager.py)** - Manages the complete issue lifecycle from draft to creation
-📝 **[Technical Writer](src/github_issue_creator/agents/writer.py)** - Creates structured issues using customizable templates
+📝 **[Technical Writer](src/github_issue_creator/agents/writer.py)** - Creates structured issues using customizable templates with self-reflection for quality assurance
 🔍 **[Analyst](src/github_issue_creator/agents/analyst.py)** - Searches for similar existing issues
-
-## Features
-
-- **Template Support**: Bug report and feature request templates
-- **Documentation Grounding**: Technical Writer uses project documentation for technical accuracy
-- **GitHub Integration**: Seamless interaction through GitHub MCP server
-- **Issue Types Support**: Automatic detection and use of organization issue types with fallback to default types (Feature/Bug)
-- **Labels Support**: Automatic retrieval and application of repository labels to created issues
-- **Trajectory Tracking**: Real-time visibility into agent interactions and tool usage
-- **Duplicate Prevention**: Intelligent search for existing similar issues
-- **User Approval**: Human-in-the-loop workflow with approval gates
-- **Conditional Requirements**: Enforced workflow steps and dependencies
-- **Repository-Scoped Tools**: Pre-configured GitHub tools with repository context for better security
 
 ## Quickstart
 
@@ -111,7 +118,11 @@ flowchart TD
     A[👤 User Input<br/>Bug/Feature Description] --> B[🎯 Project Manager<br/>Workflow Coordination]
 
     B --> C[📝 Technical Writer]
-    C --> D[📄 Draft Created<br/>with Templates]
+    C --> C1[📄 Initial Draft<br/>with Templates]
+    C1 --> C2[🔄 Self-Reflection<br/>Validate Format & Rules]
+    C2 -->|Valid| D[📄 Final Draft]
+    C2 -->|Issues Found| C3[✏️ Auto-Correct]
+    C3 --> D
     D --> E[👤 User Approval<br/>Approve/Request Changes]
 
     E -->|Changes| C
@@ -132,6 +143,10 @@ flowchart TD
     style A fill:#e1f5fe
     style B fill:#fff3e0
     style C fill:#f3e5f5
+    style C1 fill:#f3e5f5
+    style C2 fill:#fff9c4
+    style C3 fill:#fff9c4
+    style D fill:#f3e5f5
     style F fill:#e8f5e8
     style J fill:#e8f5e8
     style K fill:#f0f0f0
@@ -141,9 +156,10 @@ flowchart TD
 
 1. **User Input**: Describe the bug or feature request
 2. **Draft Creation**: Technical Writer creates structured draft using templates
-3. **Duplicate Check**: Analyst searches for similar existing issues
-4. **User Review**: User reviews and approves the draft
-5. **Issue Creation**: Final GitHub issue is created with proper formatting
+3. **Self-Reflection**: Writer automatically validates and corrects draft format and rule compliance
+4. **User Review**: User reviews and approves the final draft
+5. **Duplicate Check**: Analyst searches for similar existing issues
+6. **Issue Creation**: Final GitHub issue is created with proper formatting
 
 ## Development
 
@@ -174,6 +190,7 @@ The system uses the BeeAI Framework's Requirement Agent with:
 - [ ] 🚧 **Improve multi-turn conversations** - Better context handling across multiple interactions
 - [ ] 🚧 **GitHub Issue Types field** - Automatic detection and use of organization issue types with fallback
 - [ ] 🚧 **Pass artifacts by reference** - Reference artifacts in conversation history instead of including full content
+- [ ] 🚧 **Self-reflection loop** - Writer validates drafts against format rules and requirements, automatically correcting issues before user review
 
 ### Next
 

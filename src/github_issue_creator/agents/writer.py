@@ -147,14 +147,50 @@ You are the Technical Writer for GitHub issues. Your only task is to draft clear
 
 """
 
+    # Reflection prompt for validating the draft
+    reflection_prompt = """\
+You are reviewing a GitHub issue draft to ensure it strictly follows the required format and rules.
+
+Review the draft and check:
+- Does it use the correct ARTIFACT format with `~~~markdown` delimiters?
+- Does the title follow the format ([Bug]: or [Feature]: with 4-8 words)?
+- Are all technical identifiers wrapped in backticks?
+- Is the footer present and correct?
+- Are there any placeholders or instructions left in the draft?
+
+If the draft is correct, respond with exactly: "VALID"
+
+If there are issues, provide the corrected draft in the exact same ARTIFACT format.
+"""
+
     class WriterRunnable(Runnable[ChatModelOutput]):
         def __init__(self, llm: ChatModel) -> None:
             super().__init__()
             self._llm = llm
 
         async def run(self, input: list[AnyMessage], /, **kwargs: Unpack[RunnableOptions]) -> Run[ChatModelOutput]:
+            # Initial draft generation
             messages = [SystemMessage(system_prompt), *input]
-            return await self._llm.run(messages, **kwargs)
+            result = await self._llm.run(messages, **kwargs)
+
+            initial_draft = result.output.message.content
+
+            # Reflection: validate the draft
+            reflection_messages = [
+                SystemMessage(reflection_prompt),
+                UserMessage(f"Review this draft:\n\n{initial_draft}")
+            ]
+
+            reflection_result = await self._llm.run(reflection_messages, **kwargs)
+            reflection_response = reflection_result.output.message.content
+
+            # If validation passed, return original draft
+            if reflection_response.strip().startswith("VALID"):
+                return result
+
+            # Otherwise, use the corrected draft
+            result.output.message.content = reflection_response
+            return result
 
         def emitter(self) -> Emitter:
             return llm.emitter
