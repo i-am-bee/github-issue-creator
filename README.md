@@ -74,6 +74,21 @@ uv run server
 
 The server will start on `http://127.0.0.1:8000` and register the GitHub Issue Creator agent that coordinates the complete workflow.
 
+### Running in Agent Stack
+
+You can also easily start the agent in [Agent Stack](https://agentstack.beeai.dev/).
+
+```bash
+# Install the GH issue creator
+agentstack add ghcr.io/i-am-bee/github-issue-creator/github-issue-creator:0.2.0
+
+# Setup the repo
+agentstack env add "GitHub Issue Creator" GITHUB_REPOSITORY=username/reponame
+
+# Setup the PAT
+agentstack env add "GitHub Issue Creator" GITHUB_PAT=github_pat_XXX
+```
+
 ## Security Considerations
 
 > [!WARNING]

@@ -25,6 +25,7 @@ from github_issue_creator.utils.exceptions import ToolNotFoundError
 
 async def get_agent_manager():
     """Create and configure the issue workflow management agent."""
+
     tools = await session_manager.get_tools()
 
     try:
