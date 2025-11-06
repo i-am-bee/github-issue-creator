@@ -8,20 +8,17 @@
 
 </div>
 
-> [!WARNING]
-> This project is in early beta stage. Expect bugs and breaking changes.
-
 A multi-agent system for creating well-structured GitHub issues using the [BeeAI Framework](https://github.com/i-am-bee/beeai-framework). This system coordinates between specialized agents to draft issues, check for duplicates, and create final GitHub issues with customizable templates. The system is consumable via the [Agent Stack](https://github.com/i-am-bee/agentstack) (UI and CLI) through the A2A protocol.
 
-✅ Multi-agent workflow
-🔄 Real-time trajectory tracking
-📝 Customizable issue templates
+✅ Multi-agent workflow  
+🔄 Real-time trajectory tracking  
+📝 Customizable issue templates  
 
 ## Motivation
 
 As AI coding assistants become more capable, **the bottleneck in software development is shifting from implementation to specification**. When AI can handle the *how*, the quality of your *what* and *why* becomes critical.
 
-This project ensures every GitHub issue is well-scoped, consistently formatted, and grounded in your project's context—making it ready for both human developers and AI assistants to act on efficiently.
+This project ensures every GitHub issue is well-scoped, consistently formatted, and grounded in your project's context, making it ready for both human developers and AI assistants to act on efficiently.
 
 ## Features
 
@@ -29,7 +26,7 @@ This project ensures every GitHub issue is well-scoped, consistently formatted, 
 - 📖 **Documentation Grounding**: Technical Writer uses project documentation for technical accuracy
 - 🔄 **Self-Reflection**: Writer validates drafts against format rules and requirements automatically
 - 🔗 **GitHub Integration**: Seamless interaction through GitHub MCP server
-- 🏷️ **Issue Types Support**: Automatic detection and use of organization issue types with fallback to default types (Feature/Bug)
+- 🎫 **Issue Types Support**: Automatic detection and use of organization issue types with fallback to default types (Feature/Bug)
 - 🏷️ **Labels Support**: Automatic retrieval and application of repository labels to created issues
 - 📊 **Trajectory Tracking**: Real-time visibility into agent interactions and tool usage
 - 🔍 **Duplicate Prevention**: Intelligent search for existing similar issues
