@@ -173,7 +173,7 @@ If there are issues, provide the corrected draft in the exact same ARTIFACT form
             messages = [SystemMessage(system_prompt), *input]
             result = await self._llm.run(messages, **kwargs)
 
-            initial_draft = result.output.message.content
+            initial_draft = result.last_message.text
 
             # Reflection: validate the draft
             reflection_messages = [
@@ -182,16 +182,16 @@ If there are issues, provide the corrected draft in the exact same ARTIFACT form
             ]
 
             reflection_result = await self._llm.run(reflection_messages, **kwargs)
-            reflection_response = reflection_result.output.message.content
+            reflection_response = reflection_result.last_message.text
 
             # If validation passed, return original draft
             if reflection_response.strip().startswith("VALID"):
                 return result
 
-            # Otherwise, use the corrected draft
-            result.output.message.content = reflection_response
-            return result
-
+            # Otherwise, return the corrected draft from reflection
+            return reflection_result
+        
+        @property
         def emitter(self) -> Emitter:
             return llm.emitter
 
