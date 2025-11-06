@@ -9,7 +9,7 @@ from agentstack_sdk.a2a.extensions.ui.agent_detail import AgentDetail, EnvVar
 from openinference.instrumentation.beeai import BeeAIInstrumentor
 
 from github_issue_creator.agents.manager import get_agent_manager
-from github_issue_creator.agents.build_mock import get_build_mock
+from github_issue_creator.agents._build_mock import get_build_mock
 
 BeeAIInstrumentor().instrument()
 
