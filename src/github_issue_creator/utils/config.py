@@ -6,15 +6,13 @@ from beeai_framework.adapters.agentstack.backend.chat import AgentStackChatModel
 
 load_dotenv()
 
+default_model = "openai:gpt-5-mini"
 
 if os.getenv("API_KEY") is not None:
-    print("Using API key from environment variable")
-    model = os.getenv("MODEL", "openai:gpt-5-mini")
+    model = os.getenv("MODEL", default_model)
     llm = ChatModel.from_name(model, {"api_key": os.getenv("API_KEY")})
 else:
-    print("Using LLM from Agent Stack")
-    model = os.getenv("MODEL", "openai:gpt-4o")
-    llm = AgentStackChatModel(preferred_models=["openai:gpt-4o"])
+    llm = AgentStackChatModel(preferred_models=[default_model])
 
 # Import after load_dotenv to ensure env vars are loaded
 from github_issue_creator.tools.session_manager import SessionManager
