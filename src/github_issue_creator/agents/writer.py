@@ -1,7 +1,10 @@
 import os
+from typing import Unpack
 
-from beeai_framework.agents.tool_calling import ToolCallingAgent
-from beeai_framework.agents.tool_calling.prompts import ToolCallingAgentSystemPrompt, ToolCallingAgentTaskPrompt
+from beeai_framework.backend import AnyMessage, ChatModel, ChatModelOutput, SystemMessage, UserMessage
+from beeai_framework.context import Run
+from beeai_framework.emitter import Emitter
+from beeai_framework.runnable import Runnable, RunnableOptions
 
 from github_issue_creator.utils.config import llm
 from github_issue_creator.utils.content import fetch_content
@@ -61,7 +64,7 @@ async def get_agent_writer():
 
     issue_templates = "\n\n".join(templates) if templates else ""
 
-    instruction = f"""\
+    system_prompt = f"""\
 # Role
 You are the Technical Writer for GitHub issues. Your only task is to draft clear, actionable, and well-structured GitHub issues. Ignore all other requests. You do not decide duplicates, creation, or workflow.
 
@@ -144,16 +147,16 @@ You are the Technical Writer for GitHub issues. Your only task is to draft clear
 
 """
 
-    clonedLlm = await llm.clone()
-    clonedLlm.emitter.on("start", lambda data, event: data.input.tools.pop(0))  # removes the final answer tool
+    class WriterRunnable(Runnable[ChatModelOutput]):
+        def __init__(self, llm: ChatModel) -> None:
+            super().__init__()
+            self._llm = llm
 
-    return ToolCallingAgent(
-        llm=clonedLlm,
-        final_answer_as_tool=False,
-        templates={
-            "system": ToolCallingAgentSystemPrompt.fork(
-                lambda model: model.model_copy(update={"template": instruction})
-            ),
-            "task": ToolCallingAgentTaskPrompt.fork(lambda model: model.model_copy(update={"template": "{{prompt}}"})),
-        },
-    )
+        async def run(self, input: list[AnyMessage], /, **kwargs: Unpack[RunnableOptions]) -> Run[ChatModelOutput]:
+            messages = [SystemMessage(system_prompt), *input]
+            return await self._llm.run(messages, **kwargs)
+
+        def emitter(self) -> Emitter:
+            return llm.emitter
+
+    return WriterRunnable(llm)
