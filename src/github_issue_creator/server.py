@@ -13,13 +13,21 @@ from github_issue_creator.agents._build_mock import get_build_mock
 
 BeeAIInstrumentor().instrument()
 
+
 async def get_root_agent():
     return get_build_mock() if os.getenv("IS_BUILD_PASS") == "true" else await get_agent_manager()
+
 
 async def run():
     root_agent = await get_root_agent()
 
-    server = BeeAIPlatformServer(config={"configure_telemetry": True, "port": 8000,"host": "0.0.0.0"})
+    server = BeeAIPlatformServer(
+        config={
+            "configure_telemetry": True,
+            "port": int(os.getenv("PORT", 8000)),
+            "host": os.getenv("HOST", "127.0.0.1"),
+        }
+    )
     server.register(
         root_agent,
         name="GitHub Issue Creator",
@@ -36,11 +44,20 @@ async def run():
             framework="BeeAI",
             variables=[
                 EnvVar(name="GITHUB_REPOSITORY", description="The repository to create the issue in", required=True),
-                EnvVar(name="GITHUB_PAT", description="The GitHub Personal Access Token to use for the API", required=True),
-
+                EnvVar(
+                    name="GITHUB_PAT", description="The GitHub Personal Access Token to use for the API", required=True
+                ),
                 EnvVar(name="DOCS_URL", description="The URL of the documentation to use for the API", required=False),
-                EnvVar(name="TEMPLATE_BUG_URL", description="The URL of the bug template to use for the API", required=False),
-                EnvVar(name="TEMPLATE_FEATURE_URL", description="The URL of the feature template to use for the API", required=False),
+                EnvVar(
+                    name="TEMPLATE_BUG_URL",
+                    description="The URL of the bug template to use for the API",
+                    required=False,
+                ),
+                EnvVar(
+                    name="TEMPLATE_FEATURE_URL",
+                    description="The URL of the feature template to use for the API",
+                    required=False,
+                ),
             ],
         ),
         skills=[
