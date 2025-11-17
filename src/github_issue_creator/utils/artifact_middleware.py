@@ -1,10 +1,9 @@
 import re
 
 from beeai_framework.agents import BaseAgent
-from beeai_framework.agents.requirement.utils._tool import FinalAnswerTool
-from beeai_framework.backend import MessageTextContent
 from beeai_framework.context import RunContext, RunMiddlewareProtocol
 from beeai_framework.emitter import EmitterOptions, EventMeta
+from beeai_framework.agents.requirement.events import RequirementAgentFinalAnswerEvent
 
 from github_issue_creator.tools.artifact_handoff import ArtifactStore
 
@@ -20,28 +19,13 @@ class ArtifactMiddleware(RunMiddlewareProtocol):
         assert isinstance(agent, BaseAgent), "Input must be an agent"
 
         run.emitter.on(
-            lambda event: event.name == "success" and isinstance(event.creator, FinalAnswerTool),
+            "final_answer",
             self._handle_final_answer,
             EmitterOptions(match_nested=True, is_blocking=True, priority=2),
         )
 
-    async def _handle_final_answer(self, data, meta: EventMeta) -> None:
-        # Get the FinalAnswerTool instance from the event creator
-        tool = meta.creator
-        if not isinstance(tool, FinalAnswerTool):
-            return
-
-        # Get the message from the tool's state
-        message = tool._state.answer
-        if not message:
-            return
-
-        # Expand artifacts in all text chunks
-        for chunk in message.content:
-            if isinstance(chunk, MessageTextContent):
-                expanded_text = self._expand_artifacts(chunk.text)
-                if expanded_text != chunk.text:
-                    chunk.text = expanded_text
+    async def _handle_final_answer(self, data: RequirementAgentFinalAnswerEvent, meta: EventMeta) -> None:
+        data.delta = self._expand_artifacts(data.delta)
 
     def _expand_artifacts(self, text: str) -> str:
         """Replace artifact references with full content"""
